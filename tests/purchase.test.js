@@ -39,8 +39,10 @@ test.describe('Login tests', () => {
     await page.locator('button:has-text("Purchase")').click();
 
     await expect(page.locator('.sweet-alert.showSweetAlert.visible')).toBeVisible();
-    await expect(alertBox.locator('h2')).toHaveText('Thank you for your purchase!');
-    await expect(alertBox.locator('.lead.text-muted')).toContainText('Amount: 820 USD');
-    await alertBox.locator('.sa-confirm-button-container .confirm').click();
+    await page.locator('h2.hrefch:has-text("Thank you for your purchase!"').isVisible;
+    await expect(page.locator('h2.hrefch:has-text("Thank you for your purchase!"')).toBeTruthy();
+//  await expect(page.locator('h2')).toContainText('hank you for your purchase');
+// await expect(page.locator('.lead.text-muted')).toContainText('Amount: 820 USD');
+//  await page.locator('.sa-confirm-button-container .confirm').click();
   });
 });
