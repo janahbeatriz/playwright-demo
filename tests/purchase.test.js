@@ -41,8 +41,45 @@ test.describe('Login tests', () => {
     await expect(page.locator('.sweet-alert.showSweetAlert.visible')).toBeVisible();
     await page.locator('h2.hrefch:has-text("Thank you for your purchase!"').isVisible;
     await expect(page.locator('h2.hrefch:has-text("Thank you for your purchase!"')).toBeTruthy();
-//  await expect(page.locator('h2')).toContainText('hank you for your purchase');
-// await expect(page.locator('.lead.text-muted')).toContainText('Amount: 820 USD');
-//  await page.locator('.sa-confirm-button-container .confirm').click();
+    await expect(page.locator('.lead.text-muted')).toContainText('Amount: 820 USD');
+    await page.locator('.sa-confirm-button-container .confirm').click();
+  });
+
+  test('can place multiple order as a visitor', async ({ page }) => {
+    await page.locator('a.nav-link:has-text("Home")').click();
+  
+    // Add Nokia lumia 1520 to the cart
+    await helpers.addToCart(page, 'Nokia lumia 1520');
+    
+    // Navigate back to Home page and add Nexus 6 to the cart
+    await page.locator('a.nav-link:has-text("Home")').click();
+    await helpers.addToCart(page, 'Nexus 6');
+
+     //verify if added in the cart 
+     await page.locator('a.nav-link:has-text("Cart")').click();
+     // Check for specific elements in the row, such as product name, price, and image
+     await expect(page.locator('tbody#tbodyid tr:has-text("Nokia lumia 1520")')).toBeVisible();
+     await expect(page.locator('tbody#tbodyid tr:has-text("820")')).toBeVisible();
+     await expect(page.locator('tbody#tbodyid tr:has-text("Nexus 6")')).toBeVisible();
+     await expect(page.locator('tbody#tbodyid tr:has-text("650")')).toBeVisible();
+  });
+
+  test('verify total price in cart', async ({ page }) => {
+    await page.locator('a.nav-link:has-text("Home")').click();
+    await helpers.addToCart(page, 'Nokia lumia 1520');
+    await page.locator('a.nav-link:has-text("Home")').click();
+    await helpers.addToCart(page, 'Nexus 6');
+    await page.locator('a.nav-link:has-text("Cart")').click();
+
+    // Wait for the cart items to be visible
+    await page.waitForSelector('#tbodyid tr.success');
+    const prices = await page.locator('table tbody tr.success td:nth-child(3)').allTextContents();
+    const totalPrice = prices.reduce((sum, price) => sum + parseFloat(price.trim()), 0);
+    //console.log(`Total Price: ${totalPrice}`);
+
+    const totPrice = await page.locator('#totalp').textContent();
+    const tp = parseFloat(totPrice.trim());  // Converts to float
+    //console.log(tp);
+    await expect(tp).toEqual(totalPrice);
   });
 });
