@@ -2,12 +2,9 @@ import { test, expect } from '@playwright/test';
 import * as helpers from '../utils/helper';  // Import everything from helper.js as 'helpers'
 import * as data from '../utils/testData';   // Import everything from testData.js as 'data'
 
-test.describe('Login tests', () => {
+test.describe('Purchase tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(data.urls.demoStore);  // Use 'urls' from 'data'
-  });
-
-  test('has title', async ({ page }) => {
     await expect(page).toHaveTitle(data.selectors.title);  // Use title from 'data'
   });
 
