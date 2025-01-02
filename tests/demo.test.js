@@ -1,7 +1,10 @@
+// tests/demo.test.js
 const { test, expect } = require('@playwright/test');
+const { HomePage } = require('../pages/HomePage');
 
 test('Check if DemoBlaze homepage works', async ({ page }) => {
-  await page.goto('https://www.demoblaze.com/');
-  const title = await page.title();
+  const homePage = new HomePage(page);
+  await homePage.navigate();
+  const title = await homePage.getTitle();
   expect(title).toBe('STORE');
 });

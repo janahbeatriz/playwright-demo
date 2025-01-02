@@ -5,7 +5,6 @@ import * as data from '../utils/testData';   // Import everything from testData.
 test.describe('Purchase tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(data.urls.demoStore);  // Use 'urls' from 'data'
-    await expect(page).toHaveTitle(data.selectors.title);  // Use title from 'data'
   });
 
   test('can place order as a visitor', async ({ page }) => {
