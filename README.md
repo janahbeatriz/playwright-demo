@@ -5,7 +5,7 @@ This repository demonstrates end-to-end test automation using Playwright. The pr
 ## Technologies Used
 - **Playwright**: A powerful browser automation library used for testing modern web applications.
 - **Node.js**: A JavaScript runtime environment.
-- **JavaScript/TypeScript**: The scripting languages used for writing automation scripts.
+- **JavaScript**: The scripting languages used for writing automation scripts.
 
 ## Features
 - Automated browser testing with Playwright.
