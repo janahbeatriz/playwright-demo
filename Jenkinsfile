@@ -8,8 +8,8 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                // Checkout the code from your Git repository
-                git 'https://github.com/janahbeatriz/playwright-demo.git'  // Correct repo URL
+                // Checkout the code from your Git repository and specify the main branch
+                git branch: 'main', url: 'https://github.com/janahbeatriz/playwright-demo.git'
             }
         }
 
