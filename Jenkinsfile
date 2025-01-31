@@ -8,14 +8,14 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                // Checkout the code from your Git repository and specify the main branch
+                echo "Checking out the code from the Git repository"
                 git branch: 'main', url: 'https://github.com/janahbeatriz/playwright-demo.git'
             }
         }
 
         stage('Set Up Node.js') {
             steps {
-                // Set up Node.js with the specified version
+                echo "Setting up Node.js"
                 script {
                     def nodeTool = tool name: 'NodeJS', type: 'NodeJSInstallation'
                     env.PATH = "${nodeTool}/bin:${env.PATH}"
@@ -23,23 +23,30 @@ pipeline {
             }
         }
 
+        stage('Check Node.js Version') {
+            steps {
+                echo "Checking Node.js version"
+                sh 'node -v'  // This will print the Node.js version in the console
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
-                // Install npm dependencies
+                echo "Installing npm dependencies"
                 sh 'npm install'
             }
         }
 
         stage('Install Playwright Browsers') {
             steps {
-                // Install Playwright and the required browsers
+                echo "Installing Playwright browsers"
                 sh 'npx playwright install'
             }
         }
 
         stage('Run Playwright Tests') {
             steps {
-                // Run Playwright tests
+                echo "Running Playwright tests"
                 sh 'npx playwright test'
             }
         }
@@ -47,7 +54,7 @@ pipeline {
 
     post {
         always {
-            // Clean up after tests (optional)
+            echo "Cleaning workspace"
             cleanWs()
         }
 
