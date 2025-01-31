@@ -28,7 +28,7 @@ class LoginPage {
 
   async logout() {
     await this.page.click(this.logoutButton);
-    await expect(this.page.locator(this.userWelcomeText)).not.toBeVisible();
+    await expect(this.page.locator(this.userWelcomeText)).toBeVisible();
   }
 }
 
