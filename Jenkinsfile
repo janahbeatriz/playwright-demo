@@ -23,14 +23,6 @@ pipeline {
             }
         }
 
-        // Debug step to verify Node.js installation
-        stage('Check Node.js Version') {
-            steps {
-                // Verify Node.js installation
-                sh 'node -v'
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
                 // Install npm dependencies
