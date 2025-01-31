@@ -2,25 +2,28 @@ pipeline {
     agent any
 
     tools {
-        nodejs "NodeJS" // Ensure this matches your Jenkins NodeJS tool name
+        // Match the name configured in Jenkins ("NodeJS")
+        nodejs "node-18"
     }
 
     stages {
+        // Remove redundant "Checkout Code" stage (SCM is auto-checked out)
+
         stage('Install Dependencies') {
             steps {
-                bat 'npm ci'
+                sh 'npm ci' // Use "npm ci" for cleaner installs in CI
             }
         }
 
         stage('Install Playwright Browsers') {
             steps {
-                bat 'npx playwright install --with-deps'
+                sh 'npx playwright install --with-deps' // Install browsers with OS dependencies
             }
         }
 
         stage('Run Playwright Tests') {
             steps {
-                bat 'npx playwright test --reporter=html'
+                sh 'npx playwright test --reporter=html' // Generate HTML reports
             }
         }
     }
@@ -28,6 +31,7 @@ pipeline {
     post {
         always {
             cleanWs()
+            // Archive test results (optional)
             archiveArtifacts artifacts: 'playwright-report/**/*', allowEmptyArchive: true
         }
     }
