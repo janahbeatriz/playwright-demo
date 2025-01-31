@@ -1,60 +1,69 @@
 pipeline {
-    agent any  // This runs on any available agent (you can specify 'windows' if using a Windows agent)
+    agent any
 
-    environment {
-        NODE_VERSION = '18'
+    tools {
+        nodejs "NodeJS"  // Requires NodeJS plugin and tool configured in Jenkins
     }
 
     stages {
         stage('Install Dependencies') {
             steps {
-                bat 'npm ci'  // Install dependencies using npm (Windows)
+                bat 'npm ci'
             }
         }
 
         stage('Install Playwright Browsers') {
             steps {
-                bat 'npx playwright install --with-deps'  // Install Playwright and required browsers
+                bat 'npx playwright install --with-deps'
             }
         }
 
         stage('Run Playwright Tests') {
             steps {
+                bat 'npx playwright test --reporter=html,line'
+            }
+        }
+
+        stage('Fix Report Paths') {
+            steps {
                 script {
-                    try {
-                        bat 'npx playwright test --reporter=html'  // Run Playwright tests and generate HTML report
-                    } catch (Exception e) {
-                        echo "Test failed, but continuing the pipeline."
-                        echo "Error details: ${e.getMessage()}"
-                    }
+                    // Fix absolute paths in HTML report for Jenkins compatibility
+                    bat '''
+                        cd playwright-report
+                        powershell -Command "(Get-Content index.html) -replace 'href=\"/', 'href=\"./' | Set-Content index.html"
+                        powershell -Command "(Get-Content index.html) -replace 'src=\"/', 'src=\"./' | Set-Content index.html"
+                    '''
                 }
-            }
-        }
-
-        stage('Check Report Directory') {
-            steps {
-                bat 'dir /s /b playwright-report'  // List all files in the playwright-report directory (Windows)
-            }
-        }
-
-        stage('Archive Playwright Report') {
-            steps {
-                archiveArtifacts artifacts: 'playwright-report/**/*', allowEmptyArchive: true
             }
         }
     }
 
     post {
         always {
-            cleanWs()  // Clean up workspace
+            // Publish HTML report properly
+            publishHTML(
+                target: [
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'playwright-report',
+                    reportFiles: 'index.html',
+                    reportName: 'Playwright HTML Report'
+                ]
+            )
+
+            // Archive raw files as backup
+            archiveArtifacts artifacts: 'playwright-report/**/*', allowEmptyArchive: true
+
+            cleanWs()
         }
 
         success {
-            echo 'Build finished successfully, even if some tests failed.'
+            echo 'Build finished successfully - View report at: ${BUILD_URL}Playwright_20HTML_20Report/'
         }
 
-        failure {
-            echo 'Tests failed, but build still succeeded.'
+        unstable {
+            echo 'Some tests failed - View report at: ${BUILD_URL}Playwright_20HTML_20Report/'
         }
     }
 }
