@@ -1,54 +1,45 @@
-pipeline {
-    agent any
-
-    tools {
-        nodejs "node-18"  // Ensure this matches the Node.js version configured in Jenkins
-    }
-
-    stages {
-        stage('Install Dependencies') {
-            steps {
-                bat 'npm ci'  // Install npm dependencies
-            }
-        }
-
-        stage('Install Playwright Browsers') {
-            steps {
-                bat 'npx playwright install --with-deps'  // Install Playwright browsers
-            }
-        }
-
-        stage('Run Playwright Tests') {
-            steps {
-                bat 'npx playwright test --reporter=html'  // Run Playwright tests and generate HTML report
-            }
-        }
-
-        stage('Check Report Directory') {
-            steps {
-                bat 'dir /s /b playwright-report'  // List all files in the playwright-report folder
-            }
-        }
-
-        stage('Archive Test Results') {
-            steps {
-                // Archive the Playwright HTML report (even if it's ignored by git)
-                archiveArtifacts artifacts: 'playwright-report/**/*', allowEmptyArchive: true
-            }
-        }
-    }
-
-    post {
-        always {
-            cleanWs()  // Clean up workspace
-        }
-
-        success {
-            echo 'Tests passed successfully!'
-        }
-
-        failure {
-            echo 'Tests failed!'
-        }
-    }
-}
+name: Playwright Tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright Tests
+        run: npx playwright test --reporter=html
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Download Test Report
+        uses: actions/download-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report
+      - name: Deploy Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.PAT_TOKEN }}  # This is the secret you added earlier
+          publish_dir: playwright-report
