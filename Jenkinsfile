@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs "NodeJS"  // Requires NodeJS plugin and tool configured in Jenkins
+        nodejs "node-18"  // Requires NodeJS plugin and tool configured in Jenkins
     }
 
     stages {
