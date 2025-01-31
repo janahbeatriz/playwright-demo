@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         // Match the name configured in Jenkins ("NodeJS")
-        nodejs "NodeJS"
+        nodejs "node-18"
     }
 
     stages {
