@@ -30,6 +30,8 @@ pipeline {
         always {
             cleanWs()  // Clean up workspace
             archiveArtifacts artifacts: 'playwright-report/**/*', allowEmptyArchive: true
+            // Publish HTML report
+            publishHTML([reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright Test Report'])
         }
     }
 }
