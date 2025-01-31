@@ -25,7 +25,6 @@ pipeline {
                         bat 'npx playwright test --reporter=html'  // Run Playwright tests and generate HTML report
                     } catch (Exception e) {
                         echo "Test failed, but continuing the pipeline."
-                        echo "Error details: ${e.getMessage()}"
                     }
                 }
             }
@@ -39,6 +38,7 @@ pipeline {
 
         stage('Archive Playwright Report') {
             steps {
+                // Archive the Playwright HTML report
                 archiveArtifacts artifacts: 'playwright-report/**/*', allowEmptyArchive: true
             }
         }
@@ -55,6 +55,16 @@ pipeline {
 
         failure {
             echo 'Tests failed, but build still succeeded.'
+        }
+
+        // Publish the Playwright HTML report using the HTML Publisher Plugin
+        always {
+            publishHTML(target: [
+                reportName: 'Playwright Test Report',
+                reportDir: 'playwright-report',  // Path where the Playwright HTML report is generated
+                reportFiles: 'index.html',  // The file to display
+                keepAll: true
+            ])
         }
     }
 }
