@@ -21,11 +21,11 @@ pipeline {
         stage('Run Playwright Tests') {
             steps {
                 script {
-                    // Run Playwright tests and allow failure
                     try {
                         bat 'npx playwright test --reporter=html'  // Run Playwright tests and generate HTML report
                     } catch (Exception e) {
                         echo "Test failed, but continuing the pipeline."
+                        echo "Error details: ${e.getMessage()}"
                     }
                 }
             }
@@ -39,7 +39,6 @@ pipeline {
 
         stage('Archive Playwright Report') {
             steps {
-                // Archive the Playwright HTML report
                 archiveArtifacts artifacts: 'playwright-report/**/*', allowEmptyArchive: true
             }
         }
