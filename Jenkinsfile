@@ -1,8 +1,8 @@
 pipeline {
     agent any  // Run the pipeline on any available agent
 
-    environment {
-        NODE_VERSION = '16'
+    tools {
+        nodejs "node-18" // Ensure this matches your Jenkins NodeJS tool name
     }
 
     stages {
@@ -27,28 +27,28 @@ pipeline {
         stage('Check Node.js Version') {
             steps {
                 // Verify Node.js installation
-                sh 'node -v'
+                bat 'node -v'
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 // Install npm dependencies
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Install Playwright Browsers') {
             steps {
                 // Install Playwright and the required browsers
-                sh 'npx playwright install'
+                bat 'npx playwright install'
             }
         }
 
         stage('Run Playwright Tests') {
             steps {
                 // Run Playwright tests
-                sh 'npx playwright test'
+                bat 'npx playwright test'
             }
         }
     }
