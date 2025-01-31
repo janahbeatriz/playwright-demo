@@ -75,7 +75,8 @@ test.describe('Purchase tests', () => {
 
     const totPrice = await page.locator('#totalp').textContent();
     const tp = parseFloat(totPrice.trim());  // Converts to float
+    const wrongPrice = 123
     //console.log(tp);
-    await expect(tp).toEqual(totalPrice);
+    await expect(tp).toEqual(wrongPrice);
   });
 });
