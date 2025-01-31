@@ -1,70 +1,38 @@
 pipeline {
-    agent any  // Run the pipeline on any available agent
+    agent any
 
     tools {
-        nodejs "node-18" // Ensure this matches your Jenkins NodeJS tool name
+        // Match the name configured in Jenkins ("NodeJS")
+        nodejs "NodeJS"
     }
 
     stages {
-        stage('Checkout Code') {
-            steps {
-                // Checkout the code from your Git repository and specify the main branch
-                git branch: 'main', url: 'https://github.com/janahbeatriz/playwright-demo.git'
-            }
-        }
-
-        stage('Set Up Node.js') {
-            steps {
-                // Set up Node.js with the specified version
-                script {
-                    def nodeTool = tool name: 'NodeJS', type: 'NodeJSInstallation'
-                    env.PATH = "${nodeTool}/bin:${env.PATH}"
-                }
-            }
-        }
-
-        // Debug step to verify Node.js installation
-        stage('Check Node.js Version') {
-            steps {
-                // Verify Node.js installation
-                bat 'node -v'
-            }
-        }
+        // Remove redundant "Checkout Code" stage (SCM is auto-checked out)
 
         stage('Install Dependencies') {
             steps {
-                // Install npm dependencies
-                bat 'npm install'
+                sh 'npm ci' // Use "npm ci" for cleaner installs in CI
             }
         }
 
         stage('Install Playwright Browsers') {
             steps {
-                // Install Playwright and the required browsers
-                bat 'npx playwright install'
+                sh 'npx playwright install --with-deps' // Install browsers with OS dependencies
             }
         }
 
         stage('Run Playwright Tests') {
             steps {
-                // Run Playwright tests
-                bat 'npx playwright test'
+                sh 'npx playwright test --reporter=html' // Generate HTML reports
             }
         }
     }
 
     post {
         always {
-            // Clean up after tests (optional)
             cleanWs()
-        }
-
-        success {
-            echo 'Tests passed successfully!'
-        }
-
-        failure {
-            echo 'Tests failed!'
+            // Archive test results (optional)
+            archiveArtifacts artifacts: 'playwright-report/**/*', allowEmptyArchive: true
         }
     }
 }
