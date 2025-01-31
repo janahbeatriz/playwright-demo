@@ -1,5 +1,5 @@
 pipeline {
-    agent any  // Runs the pipeline on any available agent
+    agent any  // Run the pipeline on any available agent
 
     environment {
         NODE_VERSION = '16'
@@ -9,7 +9,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 // Checkout the code from your Git repository
-                git 'https://your-repository-url.git'  // Replace with your repo URL
+                git 'https://github.com/janahbeatriz/playwright-demo.git'  // Correct repo URL
             }
         }
 
@@ -17,7 +17,6 @@ pipeline {
             steps {
                 // Set up Node.js with the specified version
                 script {
-                    // Installing Node.js (ensure you have the NodeJS plugin installed in Jenkins)
                     def nodeTool = tool name: 'NodeJS', type: 'NodeJSInstallation'
                     env.PATH = "${nodeTool}/bin:${env.PATH}"
                 }
